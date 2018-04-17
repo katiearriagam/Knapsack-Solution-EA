@@ -4,9 +4,7 @@ NUMBER_OF_RANDS_TO_SELECT = 3;
 DIMENSION_ARRAY = 1;
 
 population = lowerBound+(upperBound - lowerBound).*rand(populationSize, dimensionality);
-for i = 1:populationSize
-    population(i, dimensionality) = round(population(i, dimensionality));
-end
+population(:, dimensionality) = round(population(:, dimensionality));
 
 % obtain fitness for the current population
 evals = [];
