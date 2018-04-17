@@ -1,10 +1,14 @@
-function output = DE(fitness, dimensionality, lowerBound, upperBound, populationSize, crossoverRate, differentialWeight, stopCriterion, maxEvaluationsNoImprovement)
+function output = DE(fitness, dimensionality, lowerBound, upperBound, populationSize, crossoverRate, differentialWeight, stopCriterion, maxEvaluationsNoImprovement, features)
 
 NUMBER_OF_RANDS_TO_SELECT = 3;
 DIMENSION_ARRAY = 1;
 
 population = lowerBound+(upperBound - lowerBound).*rand(populationSize, dimensionality);
-population(:, dimensionality) = round(population(:, dimensionality));
+
+actionMultipleIndex = length(features) + 1;
+for i=actionMultipleIndex:actionMultipleIndex:dimensionality
+    population(:, i) = round(population(:, i));
+end
 
 % obtain fitness for the current population
 evals = [];
@@ -38,6 +42,10 @@ while counter <= stopCriterion && maxEvaluationsNoImprovement > 0
             else
                 child(j) = population(i, j);
             end
+        end
+        
+        for i=actionMultipleIndex:actionMultipleIndex:dimensionality
+            child(i) = round(child(i));
         end
         
         child_fitness = fitness(child);
