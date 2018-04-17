@@ -8,8 +8,6 @@ for i = 1:populationSize
     population(i, dimensionality) = round(population(i, dimensionality));
 end
 
-population
-
 % obtain fitness for the current population
 evals = [];
 for i=1:populationSize
