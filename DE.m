@@ -1,10 +1,12 @@
-function output = DE(fitness, dimensionality, lowerBound, upperBound, populationSize, crossoverRate, differentialWeight, stopCriterion)
+function output = DE(fitness, dimensionality, lowerBound, upperBound, populationSize, crossoverRate, differentialWeight, stopCriterion, maxEvaluationsNoImprovement)
 
 NUMBER_OF_RANDS_TO_SELECT = 3;
 DIMENSION_ARRAY = 1;
 
-% are bounds scalar variables?
 population = lowerBound+(upperBound - lowerBound).*rand(populationSize, dimensionality);
+for i = 1:populationSize
+    population(i, dimensionality) = round(population(i, dimensionality));
+end
 
 % obtain fitness for the current population
 evals = [];
@@ -14,17 +16,22 @@ end
 
 best_fitness_iter = [];
 mean_fitness_iter = [];
-for x=1:stopCriterion % stopCriterion means new evaluations or total evaluations (x=populationSize instead of x=1)?
+
+counter = populationSize
+
+% stop criterion = total evaluations
+while counter <= stopCriterion && maxEvaluationsNoImprovement > 0
+    counter = counter + 1;
     next_gen = [];
     next_gen_evals = [];
     for i=1:populationSize
-        % mutation
+        % rand mutation
         xi1 = population(randi(populationSize), :);
         xi2 = population(randi(populationSize), :);
         xi3 = population(randi(populationSize), :);
         trialVector = xi1 + differentialWeight * (xi2 - xi3);
         
-        % crossover
+        % binomial crossover
         k = randi(dimensionality);
         child = zeros(1,dimensionality);
         for j=1:dimensionality 
@@ -41,8 +48,11 @@ for x=1:stopCriterion % stopCriterion means new evaluations or total evaluations
             next_gen = [next_gen; children];
             next_gen_evals = [next_gen_evals child_fitness];
         else
-            next_gen = [next_gen; population(i, :)];
-            next_gen_evals = [next_gen_evals evals(i)]
+            maxEvaluationsNoImprovement = maxEvaluationsNoImprovement - 1;
+            if maxEvaluationsNoImprovement > 0
+                next_gen = [next_gen; population(i, :)];
+                next_gen_evals = [next_gen_evals evals(i)];
+            end
         end
     end
     population = next_gen;
