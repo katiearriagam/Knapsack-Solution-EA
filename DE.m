@@ -1,29 +1,25 @@
-function output = DE(fitness, dimensionality, lowerBound, upperBound, populationSize, crossoverRate, differentialWeight, stopCriterion, maxEvaluationsNoImprovement, features)
-
-NUMBER_OF_RANDS_TO_SELECT = 3;
-DIMENSION_ARRAY = 1;
+function output = DE(fitness, dimensionality, lowerBound, upperBound, populationSize, crossoverRate, differentialWeight, stopCriterion, maxIterationsNoImprovement, features)
 
 population = lowerBound+(upperBound - lowerBound).*rand(populationSize, dimensionality);
 
 actionMultipleIndex = length(features) + 1;
-for i=actionMultipleIndex:actionMultipleIndex:dimensionality
+for i=actionMultipleIndex:dimensionality
     population(:, i) = round(population(:, i));
 end
 
 % obtain fitness for the current population
 evals = [];
 for i=1:populationSize
-    evals = [evals fitness(population(i,:))];
+    evals = [evals fitness(population(i,:), features)];
 end
 
 best_fitness_iter = [];
 mean_fitness_iter = [];
-
-counter = populationSize
-
+last_best_fitness = Inf;
+counter = populationSize;
+iterationsNoImprovement = maxIterationsNoImprovement;
 % stop criterion = total evaluations
-while counter <= stopCriterion && maxEvaluationsNoImprovement > 0
-    counter = counter + 1;
+while counter <= stopCriterion && iterationsNoImprovement > 0
     next_gen = [];
     next_gen_evals = [];
     for i=1:populationSize
@@ -44,21 +40,27 @@ while counter <= stopCriterion && maxEvaluationsNoImprovement > 0
             end
         end
         
-        for i=actionMultipleIndex:actionMultipleIndex:dimensionality
-            child(i) = round(child(i));
+        for j=actionMultipleIndex:dimensionality
+            child(j) = round(child(j));
         end
         
-        child_fitness = fitness(child);
+        child_fitness = fitness(child, features);
+        counter = counter + 1;
         
         if child_fitness < evals(i)
-            next_gen = [next_gen; children];
+            next_gen = [next_gen; child];
             next_gen_evals = [next_gen_evals child_fitness];
         else
-            maxEvaluationsNoImprovement = maxEvaluationsNoImprovement - 1;
-            if maxEvaluationsNoImprovement > 0
-                next_gen = [next_gen; population(i, :)];
-                next_gen_evals = [next_gen_evals evals(i)];
-            end
+            next_gen = [next_gen; population(i, :)];
+            next_gen_evals = [next_gen_evals evals(i)];
+        end
+
+        if counter > stopCriterion
+            % All remaining individuals pass to the last next generation in
+            % order to obtain the best fitness.
+            next_gen = [next_gen; population(i+1:end, :)];
+            next_gen_evals = [next_gen_evals evals(i+1:end)];
+            break;
         end
     end
     population = next_gen;
@@ -69,6 +71,13 @@ while counter <= stopCriterion && maxEvaluationsNoImprovement > 0
     best_sol = population(index,:);
     best_fitness_iter = [best_fitness_iter best_fitness];
     mean_fitness_iter = [mean_fitness_iter mean(evals)];
+
+    if best_sol < last_best_fitness
+        last_best_fitness = best_sol;
+        iterationsNoImprovement = maxIterationsNoImprovement;
+    else
+        iterationsNoImprovement = iterationsNoImprovement - 1;
+    end
 end
 
 output = struct; 
