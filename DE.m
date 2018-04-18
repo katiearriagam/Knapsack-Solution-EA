@@ -1,4 +1,6 @@
-function output = DE(fitness, dimensionality, lowerBound, upperBound, populationSize, crossoverRate, differentialWeight, stopCriterion, maxIterationsNoImprovement, features)
+function output = DE(fitness, dimensionality, lowerBound, upperBound,...
+    populationSize, crossoverRate, differentialWeight, stopCriterion,...
+    maxIterationsNoImprovement, features, training_set)
 
 population = lowerBound+(upperBound - lowerBound).*rand(populationSize, dimensionality);
 
@@ -10,7 +12,7 @@ end
 % obtain fitness for the current population
 evals = [];
 for i=1:populationSize
-    evals = [evals fitness(population(i,:), features)];
+    evals = [evals fitness(population(i,:), features, training_set)];
 end
 
 best_fitness_iter = [];
@@ -44,7 +46,7 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
             child(j) = round(child(j));
         end
         
-        child_fitness = fitness(child, features);
+        child_fitness = fitness(child, features, training_set);
         counter = counter + 1;
         
         if child_fitness < evals(i)

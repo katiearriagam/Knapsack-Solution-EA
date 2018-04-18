@@ -4,7 +4,7 @@ function [knapsack] = knapsackMain(knapsack, items, rules, actions, featureIDs)
     while(size(items, 1) > 0)
         featureVec = getKPFeatures(items, featureIDs);
         
-        isNullFeatureVec = isnan(featureVec)
+        isNullFeatureVec = isnan(featureVec);
         
         for i=1:length(isNullFeatureVec)
             if isNullFeatureVec(i) == 1
@@ -14,9 +14,9 @@ function [knapsack] = knapsackMain(knapsack, items, rules, actions, featureIDs)
             end
         end
         
-        Ft = featureVec
-        ds = sqrt(sum(abs(rules - featureVec).^2, 2))
-        rules
+        Ft = featureVec;
+        ds = sqrt(sum(abs(rules - featureVec).^2, 2));
+        rules;
         
         [~, actionIndex] = min(sqrt(sum(abs(rules - featureVec).^2, 2)));
         heurID = actions(actionIndex);
@@ -28,7 +28,7 @@ function [knapsack] = knapsackMain(knapsack, items, rules, actions, featureIDs)
         if exFlag == -1
             items(itemToAdd, :) = [];
         else
-            knapsack.items
+            knapsack.items;
         end
     end
     
