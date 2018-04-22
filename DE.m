@@ -26,6 +26,7 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
     next_gen_evals = [];
     for i=1:populationSize
         % rand mutation
+        % todo: xi1, xi2 and xi3 must be different individuals
         xi1 = population(randi(populationSize), :);
         xi2 = population(randi(populationSize), :);
         xi3 = population(randi(populationSize), :);
@@ -44,6 +45,12 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
         
         for j=actionMultipleIndex:dimensionality
             child(j) = round(child(j));
+            if child(j) < lowerBound(j)
+                child(j) = lowerBound(j);
+            end
+            if child(j) > upperBound(j)
+                child(j) = upperBound(j);
+            end
         end
         
         child_fitness = fitness(child, features, training_set);
