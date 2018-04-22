@@ -5,7 +5,7 @@ function output = DE(fitness, dimensionality, lowerBound, upperBound,...
 population = lowerBound+(upperBound - lowerBound).*rand(populationSize, dimensionality);
 
 actionMultipleIndex = length(features) + 1;
-for i=actionMultipleIndex:dimensionality
+for i=actionMultipleIndex:actionMultipleIndex:dimensionality
     population(:, i) = round(population(:, i));
 end
 
@@ -43,8 +43,11 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
             end
         end
         
-        for j=actionMultipleIndex:dimensionality
+        for j=actionMultipleIndex:actionMultipleIndex:dimensionality
             child(j) = round(child(j));
+        end
+        
+        for j=1:dimensionality
             if child(j) < lowerBound(j)
                 child(j) = lowerBound(j);
             end
