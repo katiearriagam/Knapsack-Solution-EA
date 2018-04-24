@@ -1,7 +1,8 @@
 function instances = loadInstances(names)
     instances = [];
     for k=1:length(names)
-        M = csvread(names(k));
+        file_name = strcat('instances/', names(k));
+        M = csvread(string(file_name));
         knapsackCapacity = M(1,2);
         items = zeros(M(1,1), 2);
         for i=1:M(1,1)
