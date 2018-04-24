@@ -17,7 +17,7 @@ end
 
 best_fitness_iter = [];
 mean_fitness_iter = [];
-last_best_fitness = Inf;
+last_best_fitness = -Inf;
 counter = populationSize;
 iterationsNoImprovement = maxIterationsNoImprovement;
 % stop criterion = total evaluations
@@ -68,7 +68,7 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
         child_fitness = fitness(child, features, training_set);
         counter = counter + 1;
         
-        if child_fitness < evals(i)
+        if child_fitness > evals(i)
             next_gen = [next_gen; child];
             next_gen_evals = [next_gen_evals child_fitness];
         else
@@ -88,13 +88,13 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
     evals = next_gen_evals;
 
     % select best fitness
-    [best_fitness, index] = min(evals);
+    [best_fitness, index] = max(evals);
     best_sol = population(index,:);
     best_fitness_iter = [best_fitness_iter best_fitness];
     mean_fitness_iter = [mean_fitness_iter mean(evals)];
 
-    if best_sol < last_best_fitness
-        last_best_fitness = best_sol;
+    if best_fitness > last_best_fitness
+        last_best_fitness = best_fitness;
         iterationsNoImprovement = maxIterationsNoImprovement;
     else
         iterationsNoImprovement = iterationsNoImprovement - 1;

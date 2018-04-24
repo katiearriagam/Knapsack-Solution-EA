@@ -17,8 +17,8 @@ function output = main(features, num_rules, population, crossover,...
     
     files = dir('instances');
     instancesNames = [];
-%     for i=3:length(files)
-    for i=3:100
+    for i=3:length(files)
+%     for i=3:100
         instancesNames = [instancesNames {files(i).name}];
     end
 
