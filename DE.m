@@ -26,10 +26,19 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
     next_gen_evals = [];
     for i=1:populationSize
         % rand mutation
-        % todo: xi1, xi2 and xi3 must be different individuals
-        xi1 = population(randi(populationSize), :);
-        xi2 = population(randi(populationSize), :);
-        xi3 = population(randi(populationSize), :);
+        index1 = randi(populationSize);
+        index2 = index1;
+        index3 = index1;
+        while index2 == index1
+            index2 = randi(populationSize);
+        end
+        while index3 == index1 || index3 == index2 
+            index3 = randi(populationSize);
+        end
+        
+        xi1 = population(index1, :);
+        xi2 = population(index2, :);
+        xi3 = population(index3, :);
         trialVector = xi1 + differentialWeight * (xi2 - xi3);
         
         % binomial crossover
