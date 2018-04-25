@@ -20,13 +20,19 @@ mean_fitness_iter = [];
 last_best_fitness = -Inf;
 counter = populationSize;
 iterationsNoImprovement = maxIterationsNoImprovement;
-% stop criterion = total evaluations
+best_plot = animatedline('Marker', 'o');
+best_plot.Color = 'green';
+mean_plot = animatedline('Marker', 'o');
+mean_plot.Color = 'blue';
+worst_plot = animatedline('Marker', 'o');
+worst_plot.Color = 'red';
+iterations = 0;
 while counter <= stopCriterion && iterationsNoImprovement > 0
     next_gen = [];
     next_gen_evals = [];
     for i=1:populationSize
-        % rand mutation
-        index1 = randi(populationSize);
+        % index1 = randi(populationSize); % rand mutation
+        [~, index1] = max(evals); % best mutation
         index2 = index1;
         index3 = index1;
         while index2 == index1
@@ -99,6 +105,13 @@ while counter <= stopCriterion && iterationsNoImprovement > 0
     else
         iterationsNoImprovement = iterationsNoImprovement - 1;
     end
+
+    % plot stuff
+    addpoints(best_plot,iterations,best_fitness);
+    addpoints(mean_plot,iterations,mean(evals));
+    addpoints(worst_plot,iterations,min(evals));
+    iterations = iterations + 1;
+    drawnow
 end
 
 output = struct; 
@@ -108,4 +121,5 @@ output(1).best_sol = best_sol;
 output(1).best_fitness = best_fitness;
 output(1).best_fitness_iter = best_fitness_iter;
 output(1).mean_fitness_iter = mean_fitness_iter;
+output(1).iterations = iterations;
 end

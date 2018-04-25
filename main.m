@@ -1,9 +1,12 @@
 function output = main(features, num_rules, population, crossover,...
     differentialWeight, max_evals, max_iterations, training_percentaje, seed)
 
+    NUMBER_OF_INSTANCES = 250; % max 603
+    UPPER_BOUND = 200;
+
     % Tested with:
-    % main([1 2 3], 4, 50, .85, .9, 10000, 3, .25)
-    % main([1 2 3 4 5 6 7], 5, 50, .85, .9, 10000, 3, .25)
+    % main([1 2 3 4 5 6 7], 5, 50, .85, .9, 5000, 15, .80)
+    % main([1 4 7], 6, 30, .85, .9, 5000, 15, .80)
 
     if (exist('seed', 'var'))
         rng(seed);
@@ -17,8 +20,7 @@ function output = main(features, num_rules, population, crossover,...
     
     files = dir('instances');
     instancesNames = [];
-    for i=3:length(files)
-%     for i=3:100
+    for i=3:NUMBER_OF_INSTANCES
         instancesNames = [instancesNames {files(i).name}];
     end
 
@@ -35,7 +37,7 @@ function output = main(features, num_rules, population, crossover,...
     
     % Define boundaries
     lowerBound = repmat([repmat(0,1,length(features)) 1],1,num_rules);
-    upperBound = repmat([repmat(100,1,length(features)) 4],1,num_rules);
+    upperBound = repmat([repmat(UPPER_BOUND,1,length(features)) 4],1,num_rules);
     
     % Call DE, measuring time
     tic;
@@ -50,7 +52,7 @@ function output = main(features, num_rules, population, crossover,...
     % We need another selector to compare with
     best_random_selector = [];
     best_fitness_random = -Inf;
-    iterations = 10;
+    iterations = 5;
     while iterations > 0
         random_selector = generateKPSelector(length(features), num_rules, lowerBound(1), upperBound(1));
         random_fitness = fobj(random_selector, features, test_set);
@@ -67,10 +69,11 @@ function output = main(features, num_rules, population, crossover,...
     output.best_selector = selector;% Best individual
     output.best_fitness_training = evolution_output.best_fitness; % Best fitness for training set
     output.best_fitness_test = test_output; % Best fitness for test set
-    % output.training_iterations = ;
+    output.training_iterations = evolution_output.iterations;
     output.training_time = tElapsed;
     output.training_sets = training_set;
     output.test_sets = test_set;
-    output.best_random_selector = best_random_selector;
+    [~, ~, random_selector] = intermediateScript(best_random_selector, length(features));
+    output.best_random_selector = random_selector;
     output.best_fitness_random = best_fitness_random;
 end
