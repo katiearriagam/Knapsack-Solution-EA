@@ -1,12 +1,14 @@
 function output = main(features, num_rules, population, crossover,...
     differentialWeight, max_evals, max_iterations, training_percentaje, seed)
 
-    NUMBER_OF_INSTANCES = 250; % max 603
-    UPPER_BOUND = 200;
+    NUMBER_OF_INSTANCES = 350; % max 603
+    UPPER_BOUND = 2;
+    LOWER_BOUND = -1;
 
     % Tested with:
     % main([1 2 3 4 5 6 7], 5, 50, .85, .9, 5000, 15, .80)
     % main([1 4 7], 6, 30, .85, .9, 5000, 15, .80)
+    % main([1 4 7], 5, 10, .85, 2.4, 5000, 50, .70)
 
     if (exist('seed', 'var'))
         rng(seed);
@@ -36,7 +38,7 @@ function output = main(features, num_rules, population, crossover,...
     test_set = instances;
     
     % Define boundaries
-    lowerBound = repmat([repmat(0,1,length(features)) 1],1,num_rules);
+    lowerBound = repmat([repmat(LOWER_BOUND,1,length(features)) 1],1,num_rules);
     upperBound = repmat([repmat(UPPER_BOUND,1,length(features)) 4],1,num_rules);
     
     % Call DE, measuring time
@@ -63,17 +65,25 @@ function output = main(features, num_rules, population, crossover,...
         iterations = iterations - 1;
     end
 
+    max_profit_fitness = fobj([.5 1], 1, test_set);
+    max_ratio_fitness = fobj([.5 2], 1, test_set);
+    min_weight_fitness = fobj([.5 3], 1, test_set);
+
+    [~, ~, selector] = intermediateScript(evolution_output.best_sol, length(features));
+    [~, ~, random_selector] = intermediateScript(best_random_selector, length(features));
+
     output.students = {'Andres Altamirano', 'Ana Catalina Arriaga', 'Omar Manjarrez'};
     output.IDs = {'A01191723', 'A01280132', 'A00815248'};
-    [~, ~, selector] = intermediateScript(evolution_output.best_sol, length(features));
     output.best_selector = selector;% Best individual
     output.best_fitness_training = evolution_output.best_fitness; % Best fitness for training set
-    output.best_fitness_test = test_output; % Best fitness for test set
+    output.fitness_test = test_output; % Best fitness for test set
+    output.best_random_selector = random_selector;
+    output.best_fitness_random = best_fitness_random;
+    output.fitness_max_profit = max_profit_fitness;
+    output.fitness_max_ratio = max_ratio_fitness;
+    output.fitness_min_weight = min_weight_fitness;
     output.training_iterations = evolution_output.iterations;
     output.training_time = tElapsed;
     output.training_sets = training_set;
     output.test_sets = test_set;
-    [~, ~, random_selector] = intermediateScript(best_random_selector, length(features));
-    output.best_random_selector = random_selector;
-    output.best_fitness_random = best_fitness_random;
 end
